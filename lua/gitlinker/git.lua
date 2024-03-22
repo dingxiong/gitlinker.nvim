@@ -276,4 +276,18 @@ function M.get_branch_remote()
   return nil
 end
 
+-- only work for github at this moment
+function M.get_pr_number(relative_file_path, line_no)
+  local line_range = tostring(line_no) .. "," .. tostring(line_no)
+  local summary = git({"blame", relative_file_path, "-L", line_range, "--porcelain" })[10]
+  if not summary then
+    return nil
+  end
+  local s, e = string.find(summary, "%(#%d+%)")
+  if s == nil or e == nil then
+    return nil
+  end
+  return string.sub(summary, s+2, e-1)
+end
+
 return M

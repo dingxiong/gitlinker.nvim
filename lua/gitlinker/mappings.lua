@@ -20,6 +20,12 @@ function M.set(mappings)
   mappings = mappings or "<leader>gy"
   set_keymap("n", mappings)
   set_keymap("v", mappings, { silent = false })
+  api.nvim_set_keymap(
+    "n",
+    "<leader>gp",
+    "<cmd>lua require'gitlinker'.get_pr_url('n')<cr>",
+    { noremap = true, silent = true }
+  )
 end
 
 return M

@@ -161,4 +161,31 @@ function M.get_repo_url(user_opts)
   return url
 end
 
+function M.get_pr_url(mode, user_opts)
+  user_opts = vim.tbl_deep_extend("force", opts.get(), user_opts or {})
+
+  local url_data = get_buf_range_url_data(mode, user_opts)
+  if not url_data then
+    return nil
+  end
+
+  local pr_number = git.get_pr_number(url_data.file, url_data.lstart)
+  if not pr_number then
+    vim.notify(string.format("Fail to find the pr number for %s:%d", url_data.file, url_data.lstart), vim.log.levels.ERROR)
+    return nil
+  end
+
+  -- only works for github
+  local url = string.format("https://%s/%s/pull/%d", url_data.host, url_data.repo, tostring(pr_number))
+
+  if user_opts.action_callback then
+    user_opts.action_callback(url)
+  end
+  if user_opts.print_url then
+    vim.notify(url)
+  end
+
+  return url
+end
+
 return M
